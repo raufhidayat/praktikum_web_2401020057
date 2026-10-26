@@ -48,21 +48,81 @@
     <h2>Daftar Mahasiswa</h2>
     <table border="1" cellpadding="6" cellspacing="0">
         <tr>
-            <th>NIM</th><th>Nama</th><th>Email</th>
-            <th>Tanggal Lahir</th><th>Usia</th><th>Program Studi</th>
+            <th>NIM</th>
+            <th>Nama</th>
+            <th>Email</th>
+            <th>Tanggal Lahir</th>
+            <th>Usia</th>
+            <th>Program Studi</th>
+            <th>Aksi</th>
         </tr>
-        @forelse ($daftarMahasiswa as $mahasiswa)
-            <tr>
-                <td>{{ $mahasiswa['nim'] }}</td>
-                <td>{{ $mahasiswa['nama'] }}</td>
-                <td>{{ $mahasiswa['email'] }}</td>
-                <td>{{ $mahasiswa['tanggal_lahir'] }}</td>
-                <td>{{ $mahasiswa['usia'] }}</td>
-                <td>{{ $mahasiswa['nama_prodi'] }}</td>
-            </tr>
-        @empty
-            <tr><td colspan="6">Data belum tersedia.</td></tr>
-        @endforelse
-    </table>
+    @forelse ($daftarMahasiswa as $mahasiswa)
+        <tr>
+            <td>{{ $mahasiswa['nim'] }}</td>
+            <td>{{ $mahasiswa['nama'] }}</td>
+            <td>{{ $mahasiswa['email'] }}</td>
+            <td>{{ $mahasiswa['tanggal_lahir'] }}</td>
+            <td>{{ $mahasiswa['usia'] }}</td>
+            <td>{{ $mahasiswa['nama_prodi'] }}</td>
+
+            <td>
+                <a href="{{ route('mahasiswa.edit', $mahasiswa['id']) }}">
+                    Ubah
+                </a>
+
+                <form
+                    action="{{ route('mahasiswa.destroy', $mahasiswa['id']) }}"
+                    method="POST"
+                    onsubmit="return confirm('Yakin ingin menghapus data mahasiswa ini?')"
+                >
+                    @csrf
+                    @method('DELETE')
+
+                    <button type="submit">Hapus</button>
+                </form>
+            </td>
+        </tr>
+    @empty
+        <tr>
+            <td colspan="7">Data belum tersedia.</td>
+        </tr>
+    @endforelse        
+
+
+    <h2>Pencarian dan Filter</h2>
+
+<form action="{{ route('mahasiswa.index') }}" method="GET">
+    <p>
+        Cari NIM, nama, atau email<br>
+        <input
+            type="text"
+            name="q"
+            value="{{ $kataKunci }}"
+            placeholder="Masukkan kata kunci"
+        >
+    </p>
+
+    <p>
+        Program Studi<br>
+        <select name="program_studi_id">
+            <option value="">-- Semua Program Studi --</option>
+
+            @foreach ($daftarProgramStudi as $programStudi)
+                <option
+                    value="{{ $programStudi['id'] }}"
+                    @selected(
+                        $programStudiId == $programStudi['id']
+                    )
+                >
+                    {{ $programStudi['nama_prodi'] }}
+                </option>
+            @endforeach
+        </select>
+    </p>
+
+    <button type="submit">Cari / Filter</button>
+    <a href="{{ route('mahasiswa.index') }}">Reset</a>
+
+</form>
 </body>
 </html>
